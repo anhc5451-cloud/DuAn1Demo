@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Trị Viên (Admin) - Tổng Quan - Poly Coffee</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- TOP NAVBAR (CHỈ HIỂN THỊ QUẢN TRỊ VIÊN & NÚT ĐĂNG XUẤT) -->
+    <header class="top-navbar no-print">
+        <div class="container-fluid d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div class="d-flex align-items-center gap-4">
+                <a href="#" class="brand-logo">
+                    <i class="fa-solid fa-mug-hot"></i>
+                    <span>POLY COFFEE</span>
+                </a>
+                <span class="nav-clock d-none d-sm-inline-flex" title="Thời gian hiện tại">
+                    <i class="fa-regular fa-clock"></i>
+                    <span id="currentTime">--:--</span>
+                </span>
+                <span class="badge bg-danger px-3 py-2 rounded-pill fw-bold">
+                    <i class="fa-solid fa-user-shield me-1"></i>TRANG QUẢN TRỊ VIÊN
+                </span>
+            </div>
+
+            <!-- STAFF INFO & LOGOUT -->
+            <div class="d-flex align-items-center gap-3">
+                <div class="text-end d-none d-sm-block">
+                    <div class="fw-bold text-white" id="navbarUserName">Nguyễn Quản Trị</div>
+                    <small class="text-warning fw-semibold" id="navbarUserRole">Quản Trị Viên (Admin)</small>
+                </div>
+                <button class="btn btn-outline-danger btn-sm rounded-pill px-3 text-white border-light" onclick="logout()" title="Đăng xuất khỏi hệ thống">
+                    <i class="fa-solid fa-right-from-bracket me-1"></i>Đăng Xuất
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN ADMIN CONTENT -->
+    <main class="container-fluid p-3 p-lg-4">
+        <!-- ADMIN SUB-NAV MENU TABS -->
+        <div class="d-flex flex-wrap gap-2 admin-tab-bar shadow-sm mb-4">
+            <a href="admin.html" class="btn btn-primary rounded-pill px-3 fw-bold">
+                <i class="fa-solid fa-chart-line me-1"></i>Tổng Quan & Báo Cáo
+            </a>
+            <a href="admin-top-products.html" class="btn btn-light rounded-pill px-3 fw-semibold text-muted">
+                <i class="fa-solid fa-fire me-1 text-warning"></i>Món Bán Chạy Nhất
+            </a>
+            <a href="admin-bills.html" class="btn btn-light rounded-pill px-3 fw-semibold text-muted">
+                <i class="fa-solid fa-clock-rotate-left me-1 text-primary"></i>Lịch Sử Bill
+            </a>
+            <a href="admin-menu.html" class="btn btn-light rounded-pill px-3 fw-semibold text-muted">
+                <i class="fa-solid fa-mug-hot me-1 text-danger"></i>Quản Lý Menu & Combo
+            </a>
+            <a href="admin-staff.html" class="btn btn-light rounded-pill px-3 fw-semibold text-muted">
+                <i class="fa-solid fa-users-gear me-1 text-success"></i>Quản Lý & Cấp Quyền Nhân Viên
+            </a>
+        </div>
+
+        <!-- 4 OVERVIEW STAT CARDS -->
+        <div class="row g-3 mb-4">
+            <div class="col-sm-6 col-xl-3">
+                <div class="card border-0 shadow-sm rounded-4 p-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-4 fs-3">
+                            <i class="fa-solid fa-sack-dollar"></i>
+                        </div>
+                        <div>
+                            <small class="text-muted fw-semibold">Tổng Doanh Thu</small>
+                            <h4 class="fw-bold mb-0 text-primary" id="statTotalRevenue">0 đ</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card border-0 shadow-sm rounded-4 p-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="p-3 bg-success bg-opacity-10 text-success rounded-4 fs-3">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+                        <div>
+                            <small class="text-muted fw-semibold">Tổng Số Hoá Đơn</small>
+                            <h4 class="fw-bold mb-0 text-success" id="statTotalBills">0</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card border-0 shadow-sm rounded-4 p-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="p-3 bg-warning bg-opacity-10 text-warning rounded-4 fs-3">
+                            <i class="fa-solid fa-mug-saucer"></i>
+                        </div>
+                        <div>
+                            <small class="text-muted fw-semibold">Tổng Ly / Bánh Bán Ra</small>
+                            <h4 class="fw-bold mb-0 text-warning" id="statTotalCups">0</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card border-0 shadow-sm rounded-4 p-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="p-3 bg-info bg-opacity-10 text-info rounded-4 fs-3">
+                            <i class="fa-solid fa-bell-concierge"></i>
+                        </div>
+                        <div>
+                            <small class="text-muted fw-semibold">Thẻ Rung Đang Phục Vụ</small>
+                            <h4 class="fw-bold mb-0 text-info" id="statActiveBuzzers">0 / 20</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOP 5 PREVIEW & RECENT ORDERS TABLE -->
+        <div class="row g-3">
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm rounded-4 p-3 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold text-primary mb-0"><i class="fa-solid fa-crown me-2 text-warning"></i>Top 5 Món Bán Chạy Nhất</h6>
+                        <a href="admin-top-products.html" class="small fw-bold text-decoration-none text-primary">Xem tất cả <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                    <div id="adminTopOverviewList" class="d-flex flex-column gap-3">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm rounded-4 p-3 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold text-primary mb-0"><i class="fa-solid fa-clock-rotate-left me-2"></i>Đơn Hàng Gần Đây</h6>
+                        <a href="admin-bills.html" class="small fw-bold text-decoration-none text-primary">Xem tất cả <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light small">
+                                <tr>
+                                    <th>Mã Đơn</th>
+                                    <th>Thẻ</th>
+                                    <th>Tổng Tiền</th>
+                                    <th>Hình Thức</th>
+                                    <th>Trạng Thái</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminRecentBillsTable">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Shared JS -->
+    <script src="js/data.js"></script>
+    <!-- Admin JS -->
+    <script src="js/admin.js"></script>
+</body>
+</html>

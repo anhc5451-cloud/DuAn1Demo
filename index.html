@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Nhập Hệ Thống Nội Bộ - Poly Coffee</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="d-flex flex-column min-vh-100" style="background: radial-gradient(circle at center, #241710 0%, #140d08 100%);">
+
+    <!-- TOP SIMPLE NAVBAR -->
+    <header class="top-navbar">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <a href="index.html" class="brand-logo">
+                <i class="fa-solid fa-mug-hot"></i>
+                <span>POLY COFFEE</span>
+            </a>
+            <div class="d-flex align-items-center gap-3">
+                <span class="nav-clock d-none d-sm-inline-flex" title="Thời gian hiện tại">
+                    <i class="fa-regular fa-clock"></i>
+                    <span id="currentTime">--:--</span>
+                </span>
+                <button class="btn btn-sm btn-outline-light rounded-pill px-3" onclick="resetSampleData()">
+                    <i class="fa-solid fa-rotate-left me-1"></i>Reset Dữ Liệu
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN AUTH FORM CONTAINER (INTERNAL SYSTEM - LOGIN ONLY) -->
+    <main class="container py-5 my-auto">
+        <!-- Profile preview if already logged in -->
+        <div id="alreadyLoggedInBox" class="auth-card p-4 text-center mb-4" style="display: none;">
+            <div class="fs-1 text-primary mb-2"><i class="fa-solid fa-circle-user"></i></div>
+            <h5 class="fw-bold mb-1" id="currentUserName">Xin chào</h5>
+            <p class="text-muted small mb-3">Bạn đang trong phiên làm việc: <strong class="text-primary" id="currentUserRole">Thu Ngân</strong></p>
+            <div class="d-flex justify-content-center gap-2">
+                <button class="btn btn-primary rounded-pill px-4 fw-bold" onclick="goToMyDashboard()">
+                    <i class="fa-solid fa-arrow-right-to-bracket me-1"></i>Vào Màn Hình Làm Việc
+                </button>
+                <button class="btn btn-outline-danger rounded-pill px-3" onclick="logout()">
+                    <i class="fa-solid fa-right-from-bracket me-1"></i>Đăng Xuất
+                </button>
+            </div>
+        </div>
+
+        <!-- LOGIN CARD (HỆ THỐNG NỘI BỘ - CHỈ ĐĂNG NHẬP, TÀI KHOẢN DO ADMIN CẤP) -->
+        <div class="auth-card shadow-lg" id="authCardBox">
+            <div class="auth-header">
+                <div class="fs-2 mb-2 text-warning"><i class="fa-solid fa-mug-saucer"></i></div>
+                <h4 class="fw-bold mb-1" style="font-family: 'Space Grotesk', sans-serif;">POLY COFFEE</h4>
+                <p class="text-light text-opacity-75 small mb-0">Cổng Đăng Nhập Hệ Thống Nội Bộ</p>
+                <span class="badge bg-warning text-dark rounded-pill px-3 py-1 mt-2 font-monospace" style="font-size:0.72rem;">
+                    <i class="fa-solid fa-lock me-1"></i>Tài khoản do Quản Trị Viên (Admin) cấp
+                </span>
+            </div>
+
+            <div class="p-4">
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Tên đăng nhập:</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fa-solid fa-user text-muted"></i></span>
+                            <input type="text" class="form-control" id="loginUsername" required placeholder="Nhập username...">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold">Mật khẩu:</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fa-solid fa-lock text-muted"></i></span>
+                            <input type="password" class="form-control" id="loginPassword" required placeholder="Nhập mật khẩu...">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 py-2 rounded-pill fw-bold fs-6 shadow-sm mb-3">
+                        <i class="fa-solid fa-right-to-bracket me-2"></i>ĐĂNG NHẬP HỆ THỐNG
+                    </button>
+                </form>
+
+                <!-- QUICK DEMO SAMPLE ACCOUNTS -->
+                <div class="pt-3 border-top text-center">
+                    <small class="text-muted fw-bold d-block mb-2">Đăng nhập nhanh (Tài khoản nội bộ mẫu):</small>
+                    <div class="d-flex flex-column gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-primary rounded-pill py-2 text-start px-3 d-flex justify-content-between align-items-center" onclick="quickLogin('lananh', '123')">
+                            <span><i class="fa-solid fa-cash-register me-2"></i><strong>Thu Ngân:</strong> Lan Anh (<code>lananh</code> / <code>123</code>)</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-warning text-dark rounded-pill py-2 text-start px-3 d-flex justify-content-between align-items-center" onclick="quickLogin('hoangnam', '123')">
+                            <span><i class="fa-solid fa-blender me-2 text-warning"></i><strong>Pha Chế:</strong> Hoàng Nam (<code>hoangnam</code> / <code>123</code>)</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger rounded-pill py-2 text-start px-3 d-flex justify-content-between align-items-center" onclick="quickLogin('admin', '123')">
+                            <span><i class="fa-solid fa-user-shield me-2 text-danger"></i><strong>Quản Trị:</strong> Admin (<code>admin</code> / <code>123</code>)</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-top border-dark py-3 text-center text-muted small mt-auto" style="background-color: #120b06;">
+        <div class="container">
+            <span>© 2026 Poly Coffee - Hệ Thống Vận Hành Bán Hàng & Pha Chế Nội Bộ</span>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Shared JS -->
+    <script src="js/data.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initNavbar();
+
+            const user = getLoggedInUser();
+            if (user) {
+                document.getElementById('alreadyLoggedInBox').style.display = 'block';
+                document.getElementById('currentUserName').innerText = 'Xin chào, ' + user.fullName;
+                document.getElementById('currentUserRole').innerText = getRoleName(user.role);
+            }
+        });
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            const data = getAppData();
+            const foundUser = data.staff.find(u => u.username.toLowerCase() === username.toLowerCase());
+
+            if (!foundUser) {
+                alert('Tên đăng nhập không tồn tại trong hệ thống nội bộ! Vui lòng liên hệ Admin để được cấp tài khoản.');
+                return;
+            }
+
+            if (foundUser.password && foundUser.password !== password) {
+                alert('Mật khẩu không chính xác!');
+                return;
+            }
+
+            setLoggedInUser(foundUser);
+            redirectToUserRole(foundUser.role);
+        }
+
+        function quickLogin(username, password) {
+            document.getElementById('loginUsername').value = username;
+            document.getElementById('loginPassword').value = password;
+            document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+        }
+
+        function goToMyDashboard() {
+            const user = getLoggedInUser();
+            if (user) redirectToUserRole(user.role);
+        }
+
+        function redirectToUserRole(role) {
+            if (role === 'CASHIER') {
+                window.location.href = 'cashier.html';
+            } else if (role === 'BARISTA') {
+                window.location.href = 'barista.html';
+            } else if (role === 'ADMIN') {
+                window.location.href = 'admin.html';
+            } else {
+                window.location.href = 'cashier.html';
+            }
+        }
+    </script>
+</body>
+</html>

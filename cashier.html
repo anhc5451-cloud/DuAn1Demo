@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thu Ngân (POS) - Poly Coffee</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- TOP NAVBAR (HỆ THỐNG NỘI BỘ - CHỈ THÔNG TIN NHÂN VIÊN & ĐĂNG XUẤT) -->
+    <header class="top-navbar no-print">
+        <div class="container-fluid d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div class="d-flex align-items-center gap-4">
+                <a href="#" class="brand-logo">
+                    <i class="fa-solid fa-mug-hot"></i>
+                    <span>POLY COFFEE</span>
+                </a>
+                <span class="nav-clock d-none d-sm-inline-flex" title="Thời gian hiện tại">
+                    <i class="fa-regular fa-clock"></i>
+                    <span id="currentTime">--:--</span>
+                </span>
+                <span class="badge bg-primary px-3 py-2 rounded-pill fw-bold">
+                    <i class="fa-solid fa-cash-register me-1"></i>QUẦY THU NGÂN (POS)
+                </span>
+            </div>
+
+            <!-- STAFF INFO & LOGOUT -->
+            <div class="d-flex align-items-center gap-3">
+                <div class="text-end d-none d-sm-block">
+                    <div class="fw-bold text-white" id="navbarUserName">Trần Thị Lan Anh</div>
+                    <small class="text-warning fw-semibold" id="navbarUserRole">Nhân viên Thu Ngân</small>
+                </div>
+                <button class="btn btn-outline-danger btn-sm rounded-pill px-3 text-white border-light" onclick="logout()" title="Đăng xuất khỏi quầy">
+                    <i class="fa-solid fa-right-from-bracket me-1"></i>Đăng Xuất
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CASHIER INTERFACE -->
+    <main class="container-fluid p-3 p-lg-4">
+        <!-- Ready Buzzer Alert Banner (When Kitchen clicks Done) -->
+        <div id="readyBuzzerAlertContainer"></div>
+
+        <div class="row g-3">
+            <!-- LEFT COLUMN: TOÀN BỘ LÀ MENU MÓN & COMBO (RỘNG RÃI, DỄ CHỌN, LÊN TRƯỚC) -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-3 p-lg-4">
+                        <!-- Categories & Search Bar -->
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                            <div class="d-flex gap-2 overflow-auto py-1" id="categoryPills">
+                                <span class="category-pill active" onclick="filterCategory('ALL', this)">Tất cả</span>
+                                <span class="category-pill" onclick="filterCategory('COMBO', this)">🔥 Combo Tiết Kiệm</span>
+                                <span class="category-pill" onclick="filterCategory('COFFEE', this)">☕ Cà Phê</span>
+                                <span class="category-pill" onclick="filterCategory('TEA', this)">🍹 Trà & Trái Cây</span>
+                                <span class="category-pill" onclick="filterCategory('FREEZE', this)">❄️ Đá Xay & Sinh Tố</span>
+                                <span class="category-pill" onclick="filterCategory('PASTRY', this)">🥐 Bánh Ngọt</span>
+                            </div>
+                            <div class="input-group" style="max-width: 260px;">
+                                <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                                <input type="text" class="form-control bg-light border-start-0" id="searchProductInput" placeholder="Tìm kiếm món nhanh..." oninput="searchProducts(this.value)">
+                            </div>
+                        </div>
+
+                        <!-- Products Grid -->
+                        <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3" id="productsGrid" style="max-height: calc(100vh - 200px); overflow-y: auto;">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: CART PANEL + THẺ RUNG LISTBOX NẰM KẾ NÚT TẠO ĐƠN -->
+            <div class="col-lg-4">
+                <div class="cart-panel">
+                    <!-- Cart Header -->
+                    <div class="cart-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="fw-bold mb-0 text-primary"><i class="fa-solid fa-basket-shopping me-2"></i>Đơn Hàng Hiện Tại</h5>
+                            <small class="text-muted" id="cartOrderTime">Thời gian thực</small>
+                        </div>
+                        <button class="btn btn-sm btn-outline-danger rounded-pill" onclick="clearCart()" title="Xóa toàn bộ giỏ">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+
+                    <!-- Cart Items List -->
+                    <div class="cart-body" id="cartItemsList">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <!-- Cart Footer & Checkout -->
+                    <div class="cart-footer">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-muted">Tổng số lượng:</span>
+                            <strong class="fs-6" id="cartTotalQty">0 món</strong>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="fs-5 fw-bold text-light">Tổng thanh toán:</span>
+                            <strong class="fs-4 fw-extrabold text-danger" id="cartTotalAmount">0 đ</strong>
+                        </div>
+
+                        <!-- 2 PHƯƠNG THỨC THANH TOÁN (TIỀN MẶT HOẶC CHUYỂN KHOẢN QR - KHÔNG NHẬP TIỀN THỪA) -->
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted text-uppercase mb-1">Phương thức thanh toán:</label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <input type="radio" class="btn-check" name="paymentMethod" id="payCash" value="CASH" checked onchange="togglePaymentMethod('CASH')">
+                                    <label class="btn btn-outline-success w-100 fw-bold py-2 rounded-3 text-center" for="payCash">
+                                        <i class="fa-solid fa-money-bill-wave me-1"></i>Tiền mặt
+                                    </label>
+                                </div>
+                                <div class="col-6">
+                                    <input type="radio" class="btn-check" name="paymentMethod" id="payTransfer" value="TRANSFER" onchange="togglePaymentMethod('TRANSFER')">
+                                    <label class="btn btn-outline-primary w-100 fw-bold py-2 rounded-3 text-center" for="payTransfer">
+                                        <i class="fa-solid fa-qrcode me-1"></i>Chuyển khoản QR
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- QR Image Box (Only shown when Transfer selected) -->
+                        <div id="transferInfoBox" class="p-2 rounded-3 mb-3 text-center" style="display: none; background-color: #2e1e14; border: 1px solid var(--border-color);">
+                            <div class="d-flex align-items-center justify-content-center gap-2 text-primary fw-bold mb-1 small">
+                                <i class="fa-solid fa-qrcode"></i> Quét mã VietQR chuyển khoản
+                            </div>
+                            <img id="checkoutQrImage" src="" alt="QR Chuyển khoản" style="max-width: 125px; border-radius: 8px;" class="shadow-sm border">
+                            <div class="small text-muted mt-1" style="font-size:0.75rem;">Nội dung CK: <strong id="transferContentLabel" class="text-warning">CAFE THE...</strong></div>
+                        </div>
+
+                        <!-- THẺ RUNG DẠNG LISTBOX / DROPDOWN NẰM KẾ BÊN NÚT TẠO ĐƠN -->
+                        <div class="pt-2 border-top">
+                            <div class="row g-2 align-items-end">
+                                <!-- CỘT THẺ RUNG (DẠNG LISTBOX GỌN GÀNG, MỞ RỘNG KHI CẦN) -->
+                                <div class="col-5">
+                                    <label class="form-label small fw-bold text-muted text-uppercase mb-1 d-flex justify-content-between">
+                                        <span><i class="fa-solid fa-bell-concierge text-primary me-1"></i>Thẻ rung:</span>
+                                    </label>
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary buzzer-select-box w-100 d-flex justify-content-between align-items-center py-2 px-2" type="button" id="buzzerDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <span class="text-truncate fw-bold" id="selectedBuzzerLabel">Chọn thẻ</span>
+                                            <i class="fa-solid fa-chevron-down small ms-1 text-muted"></i>
+                                        </button>
+                                        <div class="dropdown-menu p-2 shadow-lg border rounded-3" style="min-width: 260px;">
+                                            <div class="d-flex justify-content-between align-items-center mb-2 px-1">
+                                                <small class="fw-bold text-primary">CHỌN THẺ RUNG (1-20):</small>
+                                                <button type="button" class="btn btn-xs btn-link p-0 text-decoration-none small" onclick="clearBuzzerSelection()">Bỏ chọn</button>
+                                            </div>
+                                            <!-- Mini list / grid 20 cards -->
+                                            <div class="buzzer-popup-grid" id="buzzerPopupGrid">
+                                                <!-- Populated by JS -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- CỘT NÚT XÁC NHẬN & XUẤT BILL -->
+                                <div class="col-7">
+                                    <button class="btn btn-primary w-100 py-2 rounded-3 fw-bold fs-6 shadow-sm d-flex align-items-center justify-content-center gap-2" onclick="createOrderAndPrintBill()" style="height: 44px;">
+                                        <i class="fa-solid fa-receipt"></i>
+                                        <span>XUẤT BILL</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL: IN HOÁ ĐƠN / BILL NHIỆT 80MM (CÓ NGÀY GIỜ RÕ RÀNG) -->
+    <div class="modal fade" id="printReceiptModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0 pb-0 no-print">
+                    <h6 class="modal-title fw-bold text-primary"><i class="fa-solid fa-receipt me-2"></i>HOÁ ĐƠN ĐIỆN TỬ</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="receipt-box" id="receiptContent">
+                        <div class="text-center">
+                            <h4 class="fw-bold mb-1">POLY COFFEE</h4>
+                            <p class="small text-muted mb-1">Cà Phê Nguyên Chất & Trà Trái Cây</p>
+                            <p class="small text-muted mb-2">Đ/C: FPT Polytechnic - ĐT: 1900 6868</p>
+                            <div class="p-2 my-2 bg-dark text-white rounded-3 fw-bold fs-5">
+                                🔔 THẺ RUNG SỐ: <span id="billReceiptBuzzer" class="text-warning">01</span>
+                            </div>
+                        </div>
+
+                        <div class="receipt-line"></div>
+
+                        <div class="small">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Mã hoá đơn:</span>
+                                <strong id="billReceiptCode">HD0001</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Ngày giờ in bill:</span>
+                                <strong id="billReceiptTime" class="text-dark">12:30:15 - 06/11/2026</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Thu ngân:</span>
+                                <span id="billReceiptCashier">Lan Anh</span>
+                            </div>
+                        </div>
+
+                        <div class="receipt-line"></div>
+
+                        <div id="billReceiptItemsList" class="small">
+                            <!-- Items inserted here -->
+                        </div>
+
+                        <div class="receipt-line"></div>
+
+                        <div class="small">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Tổng cộng:</span>
+                                <strong class="fs-6 text-danger" id="billReceiptTotal">0 đ</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Phương thức thanh toán:</span>
+                                <strong id="billReceiptPayment">Tiền mặt</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Trạng thái:</span>
+                                <span class="badge bg-success-subtle text-success border">Đã thanh toán đủ</span>
+                            </div>
+                        </div>
+
+                        <div class="receipt-line"></div>
+
+                        <div class="text-center small mt-3">
+                            <p class="fw-bold mb-1">Quý khách vui lòng giữ thẻ rung!</p>
+                            <p class="text-muted mb-0">Khi thẻ rung và phát sáng đèn xanh, xin mời quý khách tới quầy nhận món.</p>
+                            <p class="fw-semibold mt-2 mb-0">Xin Cảm Ơn & Hẹn Gặp Lại! ☕</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 no-print">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary rounded-pill px-4 fw-bold" onclick="window.print()">
+                        <i class="fa-solid fa-print me-1"></i>In Hoá Đơn
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Shared JS -->
+    <script src="js/data.js"></script>
+    <!-- Cashier JS -->
+    <script src="js/cashier.js"></script>
+</body>
+</html>
